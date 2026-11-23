@@ -78,26 +78,36 @@ p_tree <- ggtree(tree, layout = "rectangular") +
   ggtitle("NJ tree") +
   theme_pub(7)
 
-sub <- subset(spatial, subset = CellType %in% c("Hepatocyte", "Fibroblast"))
-sub$State <- ifelse(
-  sub$CellType == "Hepatocyte",
-  as.character(sub$Hepa_State),
-  as.character(sub$Fib_State)
+spatial_palette <- c(
+  Fib_Matrix      = "#E84949",
+  Fib_Morphogenic = "#49B192",
+  Hepa_Stress     = "#F99941",
+  Hepa_Norm       = "#918DC2",
+  Hepa_Imm        = "#EC54A1"
 )
 
-p_umap <- DimPlot(
-  sub,
-  reduction = "umap",
-  group.by = "State",
-  label = TRUE,
-  repel = TRUE,
-  pt.size = 0.05,
-  raster = FALSE,
-  cols = c(hepa_colors, fib_colors)
+p_map <- ggplot(
+  posi,
+  aes(
+    x = pxl_col_in_fullres,
+    y = -pxl_row_in_fullres,
+    color = SpatialCellType
+  )
 ) +
-  ggtitle("Hepatocyte and fibroblast states") +
-  theme_pub(7)
+  geom_point(size = 0.25) +
+  coord_fixed() +
+  scale_color_manual(values = spatial_palette, name = NULL) +
+  labs(x = "X", y = "Y") +
+  guides(color = "none") +
+  theme_pub(7) +
+  theme(
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    axis.line = element_line(size = 0.3),
+    axis.title = element_text(size = 7)
+  )
 
-p <- p_umap / p_tree / p_box + plot_layout(heights = c(1.1, 1, 1))
+p <- p_map / p_tree / p_box + plot_layout(heights = c(1.1, 1, 1))
 
 save_panel(p, "Fig2C_spatial_proximity.pdf", width = 4.5, height = 7)
+
