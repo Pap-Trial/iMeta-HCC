@@ -30,7 +30,7 @@ d <- tma %>%
 
 scatter_panel <- function(df, x, y, xlab, ylab) {
   df <- df[!is.na(df[[x]]) & !is.na(df[[y]]), , drop = FALSE]
-  cor_test <- cor.test(df[[x]], df[[y]], method = "pearson")
+  cor_test <- cor.test(df[[x]], df[[y]], method = "spearman")
   p_label <- if (cor_test$p.value < 0.001) {
     "P < 0.001"
   } else {
